@@ -59,8 +59,8 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
-tasks.register<Copy>("renameApk") {
-    doFirst {
+tasks.register("renameApk") {
+    doLast {
         val buildTypes = listOf("release", "debug")
         buildTypes.forEach { type ->
             val dir = file("$buildDir/outputs/apk/$type")

@@ -7,19 +7,37 @@ import 'package:android_intent_plus/flag.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 import 'package:home_widget/home_widget.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
+  debugPrint('main: App starting (before ensureInitialized)');
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('main: after ensureInitialized');
+
+  // === Запрос разрешения на уведомления для Android 13+ ===
+  if (Platform.isAndroid) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    if (androidInfo.version.sdkInt >= 33) {
+      final status = await Permission.notification.request();
+      debugPrint('Notification permission granted: $status');
+    }
+  }
+  // === Конец запроса разрешения ===
+
   await NotificationService().init();
+  debugPrint('main: NotificationService initialized');
   runApp(const MyApp());
 }
 
 Future<void> updateHomeScreenWidget(bool hasMobileInternet) async {
+  debugPrint('updateHomeScreenWidget: started');
   await HomeWidget.saveWidgetData(
     'circle_color',
     hasMobileInternet ? 'green' : 'red',
   );
   await HomeWidget.updateWidget(androidName: 'HomeWidgetProvider');
+  debugPrint('updateHomeScreenWidget: finished');
 }
 
 class NotificationService {
@@ -31,6 +49,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
+    debugPrint('NotificationService.init: started');
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings =
@@ -41,9 +60,11 @@ class NotificationService {
         // Просто восстановит приложение из background
       },
     );
+    debugPrint('NotificationService.init: finished');
   }
 
   Future<void> showStatusNotification({required bool mobileConnected}) async {
+    debugPrint('showStatusNotification: started');
     final color = mobileConnected ? "🟢" : "🔴";
     final status = mobileConnected
         ? "Мобильный интернет есть"
@@ -71,6 +92,7 @@ class NotificationService {
       platformChannelSpecifics,
       payload: 'open',
     );
+    debugPrint('showStatusNotification: finished');
   }
 
   Future<void> cancelNotification() async {
@@ -93,20 +115,30 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    debugPrint('MyAppState.initState: started');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      debugPrint('MyAppState.initState: postFrameCallback started');
       final connectivityResult = await Connectivity().checkConnectivity();
+      debugPrint('MyAppState.initState: connectivity checked');
       final hasMobile = connectivityResult.contains(ConnectivityResult.mobile);
+      debugPrint('MyAppState.initState: before showStatusNotification');
       await NotificationService().showStatusNotification(
         mobileConnected: hasMobile,
       ); // Только при запуске
+      debugPrint('MyAppState.initState: after showStatusNotification');
       await updateHomeScreenWidget(hasMobile);
+      debugPrint('MyAppState.initState: updateHomeScreenWidget done');
       _startPeriodicCheck();
+      debugPrint('MyAppState.initState: _startPeriodicCheck done');
       if (_firstOpen) {
         _firstOpen = false;
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 1500));
+        debugPrint('MyAppState.initState: calling _minimizeApp');
         _minimizeApp();
       }
+      debugPrint('MyAppState.initState: postFrameCallback finished');
     });
+    debugPrint('MyAppState.initState: finished');
   }
 
   @override
@@ -116,18 +148,23 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkAndNotify() async {
+    debugPrint('_checkAndNotify: started');
     final connectivityResult = await Connectivity().checkConnectivity();
+    debugPrint('_checkAndNotify: connectivity checked');
     final hasMobile = connectivityResult.contains(ConnectivityResult.mobile);
     // Обновляем только виджет, уведомление не показываем
     await updateHomeScreenWidget(hasMobile);
+    debugPrint('_checkAndNotify: finished');
   }
 
   void _startPeriodicCheck() {
+    debugPrint('_startPeriodicCheck: started');
     _checkTimer?.cancel();
     _checkTimer = Timer.periodic(
       Duration(minutes: _intervalMinutes),
       (_) => _checkAndNotify(),
     );
+    debugPrint('_startPeriodicCheck: finished');
   }
 
   void _changeInterval(int delta) {
@@ -138,6 +175,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _minimizeApp() async {
+    debugPrint('_minimizeApp: started');
     if (Platform.isAndroid) {
       final intent = AndroidIntent(
         action: 'android.intent.action.MAIN',
@@ -146,6 +184,7 @@ class _MyAppState extends State<MyApp> {
       );
       await intent.launch();
     }
+    debugPrint('_minimizeApp: finished');
     // Для iOS сворачивание не поддерживается
   }
 
