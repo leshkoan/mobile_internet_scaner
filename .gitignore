@@ -1,0 +1,73 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Android related
+**/android/.gradle/
+**/android/captures/
+**/android/.idea/
+**/android/local.properties
+**/android/app/key.properties
+**/android/app/google-services.json
+**/android/key.jks
+
+# iOS related
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/ServiceDefinitions.json
+**/ios/Runner.xcworkspace/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/ios/.generated/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Runner/GoogleService-Info.plist
+
+# Xcode
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata
+
+# Web related
+**/web/.dart_tool/
+**/web/build/
+
+# macOS related
+**/macos/Flutter/ephemeral/
+**/macos/Pods/
+**/macos/.symlinks/
+**/macos/build/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Windows related
+**/windows/Flutter/ephemeral/
+**/windows/build/
+
+# Linux related
+**/linux/Flutter/ephemeral/
+**/linux/build/
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Others
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*

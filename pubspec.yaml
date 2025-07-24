@@ -1,0 +1,23 @@
+name: mobile_internet_scaner
+description: Сканер наличия мобильного интернета
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  android_intent_plus: ^5.3.0
+  connectivity_plus: ^6.1.4
+  flutter:
+    sdk: flutter
+  flutter_local_notifications: ^19.3.1
+  home_widget: ^0.8.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
